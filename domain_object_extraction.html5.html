@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2011 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Chrome DevRel Team (chrome-devrel@googlegroups.com)
+                 Alex Russell (slightlyoff@chromium.org)
+                 Brad Neuberg
+-->
+<html manifest="cache.appcache">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+    <meta name="generator" content="- generator not found -">
+    <meta name="author"    content="Joel Nimety" >
+    <title>Domain Object Extraction</title>
+
+    <link href="http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono" rel="stylesheet" type="text/css" />
+    <link id="prettify-link" href="stylesheets/prettify.css" rel="stylesheet" disabled="">
+    <link href="stylesheets/moon.css" class="theme" rel="stylesheet" />
+    <link href="stylesheets/sand.css" class="theme" rel="stylesheet" />
+    <link href="stylesheets/sea_wave.css" class="theme" rel="stylesheet" />
+    <link href="stylesheets/default.css" class="theme" rel="stylesheet" media="screen"  />
+    <link href="stylesheets/common.css" rel="stylesheet" media="screen" />
+
+    <style>
+      pre { font-size: 14px; }
+    </style>
+    
+<style>
+.why { font-size: 24px }
+</style>
+
+<style>
+.icon img { vertical-align: middle }
+</style>
+
+  </head>
+  <body>
+    <nav id="helpers">
+      <button title="Previous slide" id="nav-prev" class="nav-prev">⇽</button> 
+      <button title="Jump to a random slide" id="slide-no">5</button> 
+      <button title="Next slide" id="nav-next" class="nav-next">⇾</button>
+      <menu>
+        <!-- <button type="checkbox" data-command="resources" title="View Related Resources">☆</button> -->
+        <button type="checkbox" data-command="notes" title="View Slide Notes">✏</button>
+        <button type="checkbox" data-command="source" title="View slide source">↻</button>
+        <button type="checkbox" data-command="help" title="View Help">?</button>
+      </menu>
+    </nav>
+    <div class="presentation">
+      <div id="presentation-counter">Loading...</div>
+      <div class="slides">
+        <div class="slide distant-slide" id="landing-slide">
+          <style>
+            #landing-slide p {
+              font-size: 35px;
+            }
+            p#disclaimer-message {
+              font-size: 20px;
+            }
+          </style>
+          <section class="middle">
+            <p>This presentation is an HTML5 website</p>
+            <p>Press <span id="left-init-key" class="key">→</span> key to advance.</p>
+          </section>
+          <aside class="note">
+            <section>
+              Welcome! (This field is for presenter notes and commentary.)
+            </section>
+          </aside> 
+        <span class="counter"></span></div>
+
+                
+        <div class="slide">
+          <header></header>
+          <section class="middle">
+              <p><!-- _S9SLIDE_  middle --></p>
+<h2>Domain Object Refactoring</h2>
+<p><img src="images/pulling_teeth.jpg" alt="" /></p>
+<h3>Extracting Code into Classes and Modules</h3>
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Why?</h1></header>
+          <section class="">
+              <ul>
+	<li class="why">Code Reuse</li>
+	<li class="why">Readability</li>
+	<li class="why">Wicked Fast Tests</li>
+</ul>
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Case Study &#8211; Readability &amp; Reuse</h1></header>
+          <section class="">
+              <p>Often, code ripe for extraction is not overly complicated</p>
+<!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      # Not too complicated, but difficult to decipher without comments
+      if (reg_watch_alert.regulator_ids &amp; organization.regulator_ids).any? ||
+         (reg_watch_alert.regulator_ids - Agency.supervisory.map(&amp;:id)).any?
+
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+</pre></div>
+<!-- end code -->
+
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Case Study &#8211; Readability &amp; Reuse</h1></header>
+          <section class="">
+              <!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      if ContinuityControl::RegulatorMatch.new(:reg_watch_alert =&gt; reg_watch_alert,
+                                               :organization =&gt; organization).match?
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+
+class ContinuityControl::RegulatorMatch
+  attr_accessor :reg_watch_alert, :organization
+
+  def initialize(opts = {})
+    @reg_watch_alert = opts[:reg_watch_alert]; @organization = opts[:organization]
+  end
+
+  def match?
+    primary_agency_match? || secondary_agency_present?
+  end
+
+  private
+
+  def primary_agency_match?
+    (@reg_watch_alert.regulator_ids &amp; @organization.regulator_ids).any?
+  end
+
+  def secondary_agency_present?
+    (@reg_watch_alert.regulator_ids - Agency.supervisory.map(&amp;:id)).any?
+  end
+end
+</pre></div>
+<!-- end code -->
+
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Wicked Fast Tests</h1></header>
+          <section class="">
+              <p>With spec_helper (Rails, Factories, etc)</p>
+<!-- begin code{:lang=>"bash"} -->
+<div class='code'><pre class='brush: bash toolbar: false gutter: true'>
+$ time (bundle exec rspec spec/with_spec_helper_spec.rb)
+
+9.70s user 1.82s system 99% cpu 11.566 total
+</pre></div>
+<!-- end code -->
+
+<p>Without spec_helper</p>
+<!-- begin code{:lang=>"bash"} -->
+<div class='code'><pre class='brush: bash toolbar: false gutter: true'>
+$ time (rspec spec/without_spec_helper_spec.rb)
+
+0.36s user 0.10s system 90% cpu 0.511 total
+</pre></div>
+<!-- end code -->
+
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Wicked Fast Tests</h1></header>
+          <section class="">
+              <!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+#require 'spec_helper'
+require 'lib/continuity_control/regulator_match'
+require 'app/models/agency'
+require 'ostruct'
+
+describe ContinuityControl::RegulatorMatch do
+  describe &quot;#match?&quot; do
+    context &quot;given only a primary regulator match&quot; do
+      it &quot;returns true&quot; do
+        primary_regulator_id = 1
+
+        Agency.stub! :supervisory =&gt; [OpenStruct.new(:id =&gt; primary_regulator_id)]
+        organization = stub(:regulator_ids =&gt; [primary_regulator_id])
+        reg_watch_alert = stub(:regulator_ids =&gt; [primary_regulator_id])
+
+        regulator_match = ContinuityControl::RegulatorMatch.new(
+            :organization =&gt; organization,
+            :reg_watch_alert =&gt; reg_watch_alert)
+
+        regulator_match.match?.should be_true
+      end
+    end
+
+    #...
+
+  end
+end
+</pre></div>
+<!-- end code -->
+
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Resources</h1></header>
+          <section class="">
+              <ul>
+	<li>Gary Bernhardt &#8211; Destroy All Software
+	<ul>
+		<li><a href="https://www.destroyallsoftware.com/screencasts">https://www.destroyallsoftware.com/screencasts</a></li>
+	</ul></li>
+	<li>Corey Haines &#8211; Fast Rails Tests
+	<ul>
+		<li><a href="http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests">http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests</a></li>
+	</ul></li>
+	<li>Steve Klabnik &#8211; Better Ruby Presenters
+	<ul>
+		<li><a href="http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html">http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html</a></li>
+	</ul></li>
+	<li>Ruby Rogues
+	<ul>
+		<li><a href="http://rubyrogues.com/">http://rubyrogues.com/</a></li>
+	</ul></li>
+</ul>
+
+
+          </section>
+        </div>
+                
+        <div class="slide">
+          <header><h1>Joel Nimety</h1></header>
+          <section class="">
+              <!-- begin left {} -->
+<table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
+
+<img src="images/joel_in_a_jar.jpg" alt="" />
+</td>
+<!-- end left -->
+
+<!-- begin right {} -->
+<td width='50%' markdown='block' style='vertical-align: top;'>
+
+<ul>
+	<li class="icon continuity"><img src="images/continuity_nu_32.png" alt="" /> SVP Technology, Continuity Control</li>
+	<li class="icon twitter"><img src="images/twitter_32.png" alt="" /> @jnimety</li>
+	<li class="icon email"><img src="images/email_32.png" alt="" /> jnimety@gmail.com</li>
+</ul>
+</td></tr></table>
+<!-- end right -->
+
+          </section>
+        </div>
+        
+      </div> <!-- slides -->
+
+      <div id="speaker-note" class="invisible" style="display: none;">
+      </div> <!-- speaker note -->
+      <aside id="help" class="sidebar invisible" style="display: hidden;">
+        <table>
+          <caption>Help</caption>
+          <tbody>
+            <tr>
+              <th>Move Around</th>
+              <td>&larr;&nbsp;&rarr;</td>
+            </tr>
+            <tr>
+              <th>Source File</th>
+              <td>s</td>
+            </tr>
+            <tr>
+              <th>Change Theme</th>
+              <td>t</td>
+            </tr>
+            <tr>
+              <th>Syntax Highlight</th>
+              <td>h</td>
+            </tr>
+            <tr>
+              <th>Speaker Notes</th>
+              <td>n</td>
+            </tr>
+            <tr>
+              <th>Toggle 3D</th>
+              <td>3</td>
+            </tr>
+            <tr>
+              <th>Help</th>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+      </aside>
+    </div> <!-- presentation -->
+
+    <!--[if lt IE 9]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">
+    </script>
+    <script>CFInstall.check({ mode: "overlay" });</script>
+    <![endif]-->
+
+    <script type="text/javascript" charset="UTF-8" src="javascripts/utils.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/annealing.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/common.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/dnd-lib.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/jquery.min.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/points.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="javascripts/rightclick_hook.js"></script>
+    <script src="javascripts/prettify.js" onload="prettyPrint();" defer></script>
+    <script>
+      // Check if new appcache is available, load it, and reload page.
+      if (window.applicationCache) {
+        window.applicationCache.addEventListener('updateready', function(e) {
+          if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+            window.applicationCache.swapCache();
+            if (confirm('A new version of this site is available. Load it?')) {
+              window.location.reload();
+            }
+          }
+        }, false);
+      }
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-15028909-5']);
+      _gaq.push(['_trackPageview']);
+      _gaq.push(['_trackPageLoadTime']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

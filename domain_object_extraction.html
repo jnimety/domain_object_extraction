@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=utf-8"> 
+   <title>Domain Object Extraction</title>
+
+<meta name="generator" content="- generator not found -">
+<meta name="author"    content="Joel Nimety" >
+
+<!-- SyntaxHighlighter (sh) style sheet; goes first so we can override styles if needed -->
+<!-- todo: add theme-ing support -->
+<link rel="stylesheet" href="highlighter/shCoreDefault.css">
+
+<!-- S6 style sheet links -->
+<link rel="stylesheet" href="domain_object_extraction.css"  media="projection" id="styleProjection">
+<link rel="stylesheet" href="s6/screen.css"          media="screen" id="styleScreen">
+<link rel="stylesheet" href="s6/print.css"           media="print">
+
+<!-- S6 JS -->
+<script src="s6/jquery.js"></script>
+<script src="s6/jquery.slideshow.js"></script>
+
+<!-- SyntaxHighlighter (sh) machinery -->
+<script src="highlighter/shCore.js"></script>
+
+<!-- SyntaxHighlighter brushes, remove those for languages you don't need --> 
+<script src="highlighter/shBrushAppleScript.js"></script>
+<script src="highlighter/shBrushAS3.js"></script>
+<script src="highlighter/shBrushBash.js"></script>
+<script src="highlighter/shBrushColdFusion.js"></script>
+<script src="highlighter/shBrushCpp.js"></script>
+<script src="highlighter/shBrushCSharp.js"></script>
+<script src="highlighter/shBrushCss.js"></script>
+<script src="highlighter/shBrushDelphi.js"></script>
+<script src="highlighter/shBrushDiff.js"></script>
+<script src="highlighter/shBrushErlang.js"></script>
+<script src="highlighter/shBrushGroovy.js"></script>
+<script src="highlighter/shBrushJavaFX.js"></script>
+<script src="highlighter/shBrushJava.js"></script>
+<script src="highlighter/shBrushJScript.js"></script>
+<script src="highlighter/shBrushPerl.js"></script>
+<script src="highlighter/shBrushPhp.js"></script>
+<script src="highlighter/shBrushPlain.js"></script>
+<script src="highlighter/shBrushPowerShell.js"></script>
+<script src="highlighter/shBrushPython.js"></script>
+<script src="highlighter/shBrushRuby.js"></script>
+<script src="highlighter/shBrushSass.js"></script>
+<script src="highlighter/shBrushScala.js"></script>
+<script src="highlighter/shBrushSql.js"></script>
+<script src="highlighter/shBrushVb.js"></script>
+<script src="highlighter/shBrushXml.js"></script>
+
+
+<script type="text/javascript">
+
+$(document).ready( function() {
+  Slideshow.init();
+  SyntaxHighlighter.all();
+} );
+
+  
+ 
+</script>
+
+<!-- Better Browser Banner for Microsoft Internet Explorer (IE) -->
+<!--[if IE]>
+<script src="s6/jquery.microsoft.js"></script>
+<![endif]-->
+
+
+<style>
+.why { font-size: 24px }
+</style>
+
+<style>
+.icon img { vertical-align: middle }
+</style>
+
+
+</head>
+<body>
+
+<div class="layout"> 
+  <div id="header"></div>
+  <div id="footer">
+    <h1></h1>
+    <h2></h2>
+  </div>
+</div><!-- layout -->
+
+<div class="presentation">
+   
+<div class='slide middle'>
+<p><!-- _S9SLIDE_  middle --></p>
+<h2>Domain Object Refactoring</h2>
+<p><img src="images/pulling_teeth.jpg" alt="" /></p>
+<h3>Extracting Code into Classes and Modules</h3>
+
+</div>
+<div class='slide '>
+<h1>Why?</h1><ul>
+	<li class="why">Code Reuse</li>
+	<li class="why">Readability</li>
+	<li class="why">Wicked Fast Tests</li>
+</ul>
+
+</div>
+<div class='slide '>
+<h1>Case Study &#8211; Readability &amp; Reuse</h1><p>Often, code ripe for extraction is not overly complicated</p>
+<!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      # Not too complicated, but difficult to decipher without comments
+      if (reg_watch_alert.regulator_ids &amp; organization.regulator_ids).any? ||
+         (reg_watch_alert.regulator_ids - Agency.supervisory.map(&amp;:id)).any?
+
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+</pre></div>
+<!-- end code -->
+
+
+</div>
+<div class='slide '>
+<h1>Case Study &#8211; Readability &amp; Reuse</h1><!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      if ContinuityControl::RegulatorMatch.new(:reg_watch_alert =&gt; reg_watch_alert,
+                                               :organization =&gt; organization).match?
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+
+class ContinuityControl::RegulatorMatch
+  attr_accessor :reg_watch_alert, :organization
+
+  def initialize(opts = {})
+    @reg_watch_alert = opts[:reg_watch_alert]; @organization = opts[:organization]
+  end
+
+  def match?
+    primary_agency_match? || secondary_agency_present?
+  end
+
+  private
+
+  def primary_agency_match?
+    (@reg_watch_alert.regulator_ids &amp; @organization.regulator_ids).any?
+  end
+
+  def secondary_agency_present?
+    (@reg_watch_alert.regulator_ids - Agency.supervisory.map(&amp;:id)).any?
+  end
+end
+</pre></div>
+<!-- end code -->
+
+
+</div>
+<div class='slide '>
+<h1>Wicked Fast Tests</h1><p>With spec_helper (Rails, Factories, etc)</p>
+<!-- begin code{:lang=>"bash"} -->
+<div class='code'><pre class='brush: bash toolbar: false gutter: true'>
+$ time (bundle exec rspec spec/with_spec_helper_spec.rb)
+
+9.70s user 1.82s system 99% cpu 11.566 total
+</pre></div>
+<!-- end code -->
+
+<p>Without spec_helper</p>
+<!-- begin code{:lang=>"bash"} -->
+<div class='code'><pre class='brush: bash toolbar: false gutter: true'>
+$ time (rspec spec/without_spec_helper_spec.rb)
+
+0.36s user 0.10s system 90% cpu 0.511 total
+</pre></div>
+<!-- end code -->
+
+
+</div>
+<div class='slide '>
+<h1>Wicked Fast Tests</h1><!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
+#require 'spec_helper'
+require 'lib/continuity_control/regulator_match'
+require 'app/models/agency'
+require 'ostruct'
+
+describe ContinuityControl::RegulatorMatch do
+  describe &quot;#match?&quot; do
+    context &quot;given only a primary regulator match&quot; do
+      it &quot;returns true&quot; do
+        primary_regulator_id = 1
+
+        Agency.stub! :supervisory =&gt; [OpenStruct.new(:id =&gt; primary_regulator_id)]
+        organization = stub(:regulator_ids =&gt; [primary_regulator_id])
+        reg_watch_alert = stub(:regulator_ids =&gt; [primary_regulator_id])
+
+        regulator_match = ContinuityControl::RegulatorMatch.new(
+            :organization =&gt; organization,
+            :reg_watch_alert =&gt; reg_watch_alert)
+
+        regulator_match.match?.should be_true
+      end
+    end
+
+    #...
+
+  end
+end
+</pre></div>
+<!-- end code -->
+
+
+</div>
+<div class='slide '>
+<h1>Resources</h1><ul>
+	<li>Gary Bernhardt &#8211; Destroy All Software
+	<ul>
+		<li><a href="https://www.destroyallsoftware.com/screencasts">https://www.destroyallsoftware.com/screencasts</a></li>
+	</ul></li>
+	<li>Corey Haines &#8211; Fast Rails Tests
+	<ul>
+		<li><a href="http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests">http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests</a></li>
+	</ul></li>
+	<li>Steve Klabnik &#8211; Better Ruby Presenters
+	<ul>
+		<li><a href="http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html">http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html</a></li>
+	</ul></li>
+	<li>Ruby Rogues
+	<ul>
+		<li><a href="http://rubyrogues.com/">http://rubyrogues.com/</a></li>
+	</ul></li>
+</ul>
+
+</div>
+<div class='slide '>
+<h1>Joel Nimety</h1><!-- begin left {} -->
+<table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
+
+<img src="images/joel_in_a_jar.jpg" alt="" />
+</td>
+<!-- end left -->
+
+<!-- begin right {} -->
+<td width='50%' markdown='block' style='vertical-align: top;'>
+
+<ul>
+	<li class="icon continuity"><img src="images/continuity_nu_32.png" alt="" /> SVP Technology, Continuity Control</li>
+	<li class="icon twitter"><img src="images/twitter_32.png" alt="" /> @jnimety</li>
+	<li class="icon email"><img src="images/email_32.png" alt="" /> jnimety@gmail.com</li>
+</ul>
+</td></tr></table>
+<!-- end right -->
+</div>
+
+
+</div><!-- presentation -->
+</body>
+</html>

@@ -1,0 +1,160 @@
+title: Domain Object Extraction
+author: Joel Nimety
+
+!SLIDE middle
+
+h2. Domain Object Refactoring
+
+!images/pulling_teeth.jpg!
+
+h3. Extracting Code into Classes and Modules
+
+
+h1. Why?
+
+<% content_for :head do %>
+<style>
+.why { font-size: 24px }
+</style>
+<% end %>
+
+  *(why) Code Reuse
+  *(why) Readability
+  *(why) Wicked Fast Tests
+
+h1. Case Study - Readability & Reuse
+
+Often, code ripe for extraction is not overly complicated
+
+<% code :lang =>'ruby' do %>
+class RegWatchRuleAlertScheduler < ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      # Not too complicated, but difficult to decipher without comments
+      if (reg_watch_alert.regulator_ids & organization.regulator_ids).any? ||
+         (reg_watch_alert.regulator_ids - Agency.supervisory.map(&:id)).any?
+
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+<% end %>
+
+h1. Case Study - Readability & Reuse
+
+<% code :lang =>'ruby' do %>
+class RegWatchRuleAlertScheduler < ContinuityControl::AbstractScheduler
+
+  def execute(reg_watch_alerts)
+    reg_watch_alerts.each do |reg_watch_alert|
+
+      if ContinuityControl::RegulatorMatch.new(:reg_watch_alert => reg_watch_alert,
+                                               :organization => organization).match?
+        # Do Stuff...
+      end
+    end
+  end
+
+end
+
+class ContinuityControl::RegulatorMatch
+  attr_accessor :reg_watch_alert, :organization
+
+  def initialize(opts = {})
+    @reg_watch_alert = opts[:reg_watch_alert]; @organization = opts[:organization]
+  end
+
+  def match?
+    primary_agency_match? || secondary_agency_present?
+  end
+
+  private
+
+  def primary_agency_match?
+    (@reg_watch_alert.regulator_ids & @organization.regulator_ids).any?
+  end
+
+  def secondary_agency_present?
+    (@reg_watch_alert.regulator_ids - Agency.supervisory.map(&:id)).any?
+  end
+end
+<% end %>
+
+h1. Wicked Fast Tests
+
+With spec_helper (Rails, Factories, etc)
+<% code :lang =>'bash' do %>
+$ time (bundle exec rspec spec/with_spec_helper_spec.rb)
+
+9.70s user 1.82s system 99% cpu 11.566 total
+<% end %>
+
+Without spec_helper
+<% code :lang =>'bash' do %>
+$ time (rspec spec/without_spec_helper_spec.rb)
+
+0.36s user 0.10s system 90% cpu 0.511 total
+<% end %>
+
+h1. Wicked Fast Tests
+<% code :lang => 'ruby' do %>
+#require 'spec_helper'
+require 'lib/continuity_control/regulator_match'
+require 'app/models/agency'
+require 'ostruct'
+
+describe ContinuityControl::RegulatorMatch do
+  describe "#match?" do
+    context "given only a primary regulator match" do
+      it "returns true" do
+        primary_regulator_id = 1
+
+        Agency.stub! :supervisory => [OpenStruct.new(:id => primary_regulator_id)]
+        organization = stub(:regulator_ids => [primary_regulator_id])
+        reg_watch_alert = stub(:regulator_ids => [primary_regulator_id])
+
+        regulator_match = ContinuityControl::RegulatorMatch.new(
+            :organization => organization,
+            :reg_watch_alert => reg_watch_alert)
+
+        regulator_match.match?.should be_true
+      end
+    end
+
+    #...
+
+  end
+end
+<% end %>
+
+h1. Resources
+
+ * Gary Bernhardt - Destroy All Software
+ ** "https://www.destroyallsoftware.com/screencasts":https://www.destroyallsoftware.com/screencasts
+ * Corey Haines - Fast Rails Tests
+ ** "http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests":http://confreaks.net/videos/641-gogaruco2011-fast-rails-tests
+ * Steve Klabnik - Better Ruby Presenters
+ ** "http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html":http://blog.steveklabnik.com/2011/09/09/better-ruby-presenters.html
+ * Ruby Rogues
+ ** "http://rubyrogues.com/":http://rubyrogues.com/
+
+h1. Joel Nimety
+<% content_for :head do %>
+<style>
+.icon img { vertical-align: middle }
+</style>
+<% end %>
+
+<% left do %>
+  !images/joel_in_a_jar.jpg!
+<% end %>
+
+<% right do %>
+ *(icon continuity) !images/continuity_nu_32.png! SVP Technology, Continuity Control
+ *(icon twitter) !images/twitter_32.png! @jnimety
+ *(icon email) !images/email_32.png! jnimety@gmail.com
+<% end %>
