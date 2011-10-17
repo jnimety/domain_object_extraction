@@ -551,7 +551,7 @@ video {
 
 #presentation-counter {
   color: #fff;
-  font: 100px 'Yanone Kaffeesatz';
+  font: 100px;
   letter-spacing: 1px;
   position: relative;
   top: 40%;
