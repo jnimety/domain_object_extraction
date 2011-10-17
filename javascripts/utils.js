@@ -496,11 +496,11 @@
   // load highlight setting from session storage, if available.
   // session storage can only store strings so we have to assume type coercion
   // for the boolean logic here
-  query('#prettify-link').disabled = !(sessionStorage['highlightOn'] == 'true');
+  query('#prettify-link').disabled = (sessionStorage['highlightOn'] == 'false');
 
   // disable style theme stylesheets
   var linkEls = queryAll('link.theme');
-  var stylesheetPath = sessionStorage['theme'] || 'css/default.css';
+  var stylesheetPath = sessionStorage['theme'] || 'stylesheets/moon.css';
   linkEls.forEach(function(stylesheet) {
     stylesheet.disabled = !(stylesheet.href.indexOf(stylesheetPath) != -1);
   });
