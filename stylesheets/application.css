@@ -1,0 +1,28 @@
+.deck-container .center { text-align: center; }
+.deck-container pre { font-size: 14px; }
+.why { font-size: 24px }
+.contact-list {
+  margin-left: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.contact-list li {
+  padding-left: 42px;
+  line-height: 42px;
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+.contact-list li.continuity { background-image: url(../images/continuity_nu_32.png); }
+.contact-list li.twitter { background-image: url(../images/twitter_32.png); }
+.contact-list li.email { background-image: url(../images/email_32.png); }
+
+.deck-container footer {
+  position: absolute;
+  bottom: 10px;
+  left: 5px;
+  color: #888;
+  z-index: 3;
+  margin: 0;
+  font-size: 0.6666em;
+}
+.deck-container footer p { margin: 0; }

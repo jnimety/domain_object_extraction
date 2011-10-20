@@ -2,7 +2,7 @@
 #   watch('file/path') { `command(s)` }
 #
 guard 'shell' do
-  watch( /(.*).textile/ ) {|m| `slideshow -t jnimety-g5.txt #{m[0]}; mv #{m[0]}.html5.html index.html` }
+  watch( /(.*).textile/ ) {|m| `slideshow -t deck_js.txt #{m[0]}` }
 end
 
 # vim: filetype=ruby

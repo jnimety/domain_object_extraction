@@ -1,112 +1,70 @@
 <!DOCTYPE html>
-<html>
-<head>
-   <meta http-equiv="content-type" content="text/html;charset=utf-8"> 
-   <title>Domain Object Extraction</title>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-<meta name="generator" content="- generator not found -">
-<meta name="author"    content="Joel Nimety" >
+    <title>Domain Object Extraction</title>
 
-<!-- SyntaxHighlighter (sh) style sheet; goes first so we can override styles if needed -->
-<!-- todo: add theme-ing support -->
-<link rel="stylesheet" href="highlighter/shCoreDefault.css">
+    <meta name="description" content="A jQuery library for modern HTML presentations">
+    <meta name="generator" content="- generator not found -">
+    <meta name="author" content="Joel Nimety" >
+    <meta name="description" content="- description not found -" >
+    <meta name="viewport" content="width=1024, user-scalable=no">
 
-<!-- S6 style sheet links -->
-<link rel="stylesheet" href="domain_object_extraction.css"  media="projection" id="styleProjection">
-<link rel="stylesheet" href="s6/screen.css"          media="screen" id="styleScreen">
-<link rel="stylesheet" href="s6/print.css"           media="print">
+    <!-- Core and extension CSS files -->
+    <link rel="stylesheet" href="core/deck.core.css">
+    <link rel="stylesheet" href="extensions/goto/deck.goto.css">
+    <link rel="stylesheet" href="extensions/menu/deck.menu.css">
+    <link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+    <link rel="stylesheet" href="extensions/status/deck.status.css">
+    <link rel="stylesheet" href="extensions/hash/deck.hash.css">
+    <link id="prettify-link" href="stylesheets/prettify.css" rel="stylesheet">
 
-<!-- S6 JS -->
-<script src="s6/jquery.js"></script>
-<script src="s6/jquery.slideshow.js"></script>
+    <!-- Theme CSS files (menu swaps these out) -->
+    <link rel="stylesheet" id="style-theme-link" href="themes/style/web-2.0.css">
+    <link rel="stylesheet" id="transition-theme-link" href="themes/transition/horizontal-slide.css">
 
-<!-- SyntaxHighlighter (sh) machinery -->
-<script src="highlighter/shCore.js"></script>
+    <!-- Custom CSS just for this page -->
+    <link rel="stylesheet" href="stylesheets/application.css">
 
-<!-- SyntaxHighlighter brushes, remove those for languages you don't need --> 
-<script src="highlighter/shBrushAppleScript.js"></script>
-<script src="highlighter/shBrushAS3.js"></script>
-<script src="highlighter/shBrushBash.js"></script>
-<script src="highlighter/shBrushColdFusion.js"></script>
-<script src="highlighter/shBrushCpp.js"></script>
-<script src="highlighter/shBrushCSharp.js"></script>
-<script src="highlighter/shBrushCss.js"></script>
-<script src="highlighter/shBrushDelphi.js"></script>
-<script src="highlighter/shBrushDiff.js"></script>
-<script src="highlighter/shBrushErlang.js"></script>
-<script src="highlighter/shBrushGroovy.js"></script>
-<script src="highlighter/shBrushJavaFX.js"></script>
-<script src="highlighter/shBrushJava.js"></script>
-<script src="highlighter/shBrushJScript.js"></script>
-<script src="highlighter/shBrushPerl.js"></script>
-<script src="highlighter/shBrushPhp.js"></script>
-<script src="highlighter/shBrushPlain.js"></script>
-<script src="highlighter/shBrushPowerShell.js"></script>
-<script src="highlighter/shBrushPython.js"></script>
-<script src="highlighter/shBrushRuby.js"></script>
-<script src="highlighter/shBrushSass.js"></script>
-<script src="highlighter/shBrushScala.js"></script>
-<script src="highlighter/shBrushSql.js"></script>
-<script src="highlighter/shBrushVb.js"></script>
-<script src="highlighter/shBrushXml.js"></script>
+    <script src="javascripts/modernizr.custom.js"></script>
+  </head>
 
+  <body class="deck-container">
+    <section class="slide" id="title-slide">
+    <h1>Domain Object Extraction</h1>
+    </section>
 
-<script type="text/javascript">
-
-$(document).ready( function() {
-  Slideshow.init();
-  SyntaxHighlighter.all();
-} );
-
-  
- 
-</script>
-
-<!-- Better Browser Banner for Microsoft Internet Explorer (IE) -->
-<!--[if IE]>
-<script src="s6/jquery.microsoft.js"></script>
-<![endif]-->
-
-
-<style>
-.why { font-size: 24px }
-</style>
-
-<style>
-.icon img { vertical-align: middle }
-</style>
-
-
-</head>
-<body>
-
-<div class="layout"> 
-  <div id="header"></div>
-  <div id="footer">
-    <h1></h1>
-    <h2></h2>
-  </div>
-</div><!-- layout -->
-
-<div class="presentation">
-   
-<div class='slide middle'>
-<p><!-- _S9SLIDE_  middle --></p>
-<h2>Domain Object Refactoring</h2>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
 <p><img src="images/pulling_teeth.jpg" alt="" /></p>
-<h3>Extracting Code into Classes and Modules</h3>
+<h3 class="center">Extracting Code into Classes and Modules</h3>
 
-</div>
-<div class='slide '>
-<h1>Why?</h1><ul>
-	<li class="why">Code Reuse</li>
-	<li class="why">Readability</li>
-	<li class="why">Wicked Fast Tests</li>
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Why?</h2>
+<ul>
+	<li class="slide why">Code Reuse</li>
+	<li class="slide why">Readability</li>
+	<li class="slide why">Wicked Fast Tests</li>
 </ul>
 
-</div>
-<div class='slide '>
-<h1>Case Study &#8211; Readability &amp; Reuse</h1><p>Often, code ripe for extraction is not overly complicated</p>
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Case Study &#8211; Readability &amp; Reuse</h2>
+<p>Often, code ripe for extraction is not overly complicated</p>
 <!-- begin code{:lang=>"ruby"} -->
 <div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
 class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
@@ -128,9 +86,13 @@ end
 <!-- end code -->
 
 
-</div>
-<div class='slide '>
-<h1>Case Study &#8211; Readability &amp; Reuse</h1><!-- begin code{:lang=>"ruby"} -->
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Case Study &#8211; Readability &amp; Reuse</h2>
+<!-- begin code{:lang=>"ruby"} -->
 <div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
 class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
 
@@ -145,7 +107,11 @@ class RegWatchRuleAlertScheduler &lt; ContinuityControl::AbstractScheduler
   end
 
 end
+</pre></div>
+<!-- end code -->
 
+<!-- begin code{:lang=>"ruby"} -->
+<div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
 class ContinuityControl::RegulatorMatch
   attr_accessor :reg_watch_alert, :organization
 
@@ -171,9 +137,13 @@ end
 <!-- end code -->
 
 
-</div>
-<div class='slide '>
-<h1>Wicked Fast Tests</h1><p>With spec_helper (Rails, Factories, etc)</p>
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Wicked Fast Tests</h2>
+<h3>With spec_helper (Rails, Factories, etc)</h3>
 <!-- begin code{:lang=>"bash"} -->
 <div class='code'><pre class='brush: bash toolbar: false gutter: true'>
 $ time (bundle exec rspec spec/with_spec_helper_spec.rb)
@@ -182,7 +152,7 @@ $ time (bundle exec rspec spec/with_spec_helper_spec.rb)
 </pre></div>
 <!-- end code -->
 
-<p>Without spec_helper</p>
+<h3>Without spec_helper</h3>
 <!-- begin code{:lang=>"bash"} -->
 <div class='code'><pre class='brush: bash toolbar: false gutter: true'>
 $ time (rspec spec/without_spec_helper_spec.rb)
@@ -192,9 +162,13 @@ $ time (rspec spec/without_spec_helper_spec.rb)
 <!-- end code -->
 
 
-</div>
-<div class='slide '>
-<h1>Wicked Fast Tests</h1><!-- begin code{:lang=>"ruby"} -->
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Wicked Fast Tests</h2>
+<!-- begin code{:lang=>"ruby"} -->
 <div class='code'><pre class='brush: ruby toolbar: false gutter: true'>
 #require 'spec_helper'
 require 'continuity_control/regulator_match'
@@ -227,9 +201,13 @@ end
 <!-- end code -->
 
 
-</div>
-<div class='slide '>
-<h1>Resources</h1><ul>
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Resources</h2>
+<ul>
 	<li>Gary Bernhardt &#8211; Destroy All Software
 	<ul>
 		<li><a href="https://www.destroyallsoftware.com/screencasts">https://www.destroyallsoftware.com/screencasts</a></li>
@@ -248,9 +226,13 @@ end
 	</ul></li>
 </ul>
 
-</div>
-<div class='slide '>
-<h1>Joel Nimety</h1><!-- begin left {} -->
+    </section>
+            
+    <section class="slide">
+      <h2></h2>
+      <p><!-- _S9SLIDE_  --></p>
+<h2>Joel Nimety</h2>
+<!-- begin left {} -->
 <table width='100%'><tr><td width='50%' markdown='block' style='vertical-align: top;'>
 
 <img src="images/joel_in_a_jar.jpg" alt="" />
@@ -260,16 +242,52 @@ end
 <!-- begin right {} -->
 <td width='50%' markdown='block' style='vertical-align: top;'>
 
-<ul>
-	<li class="icon continuity"><img src="images/continuity_nu_32.png" alt="" /> SVP Technology, Continuity Control</li>
-	<li class="icon twitter"><img src="images/twitter_32.png" alt="" /> @jnimety</li>
-	<li class="icon email"><img src="images/email_32.png" alt="" /> jnimety@gmail.com</li>
+<ul class="contact-list">
+	<li class="continuity">SVP Technology, <a href="https://control.continuity.net">Continuity Control</a></li>
+	<li class="twitter"><a href="http://www.twitter.com/jnimety">@jnimety</a></li>
+	<li class="email"><a href="mailto:jnimety@gmail.com">jnimety@gmail.com</a></li>
 </ul>
 </td></tr></table>
 <!-- end right -->
-</div>
 
+    </section>
+    
 
-</div><!-- presentation -->
-</body>
+    <a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+    <a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+    <footer>
+    <p>
+    <span class="footer1">Joel Nimety</span><br />
+    <span class="footer2">Domain Object Extraction</span>
+    </p>
+    </footer>
+
+    <p class="deck-status">
+    <span class="deck-status-current"></span> / <span class="deck-status-total"></span>
+    </p>
+
+    <form action="." method="get" class="goto-form">
+      <label for="goto-slide">Go to slide:</label>
+      <input type="number" name="slidenum" id="goto-slide">
+      <input type="submit" value="Go">
+    </form>
+
+    <a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+    <script src="javascripts/jquery-1.6.4.min.js"></script>
+
+    <!-- Deck Core and extensions -->
+    <script src="core/deck.core.js"></script>
+    <script src="extensions/menu/deck.menu.js"></script>
+    <script src="extensions/goto/deck.goto.js"></script>
+    <script src="extensions/status/deck.status.js"></script>
+    <script src="extensions/navigation/deck.navigation.js"></script>
+    <script src="extensions/hash/deck.hash.js"></script>
+    <script src="javascripts/prettify.js"></script>
+
+    <!-- Specific to this page -->
+    <script src="javascripts/application.js"></script>
+
+  </body>
 </html>

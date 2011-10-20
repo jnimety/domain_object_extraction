@@ -1,28 +1,25 @@
 title: Domain Object Extraction
 author: Joel Nimety
+footer: Joel Nimety
+subfooter: Domain Object Extraction
 
-!SLIDE middle
-
-h2. Domain Object Refactoring
+!SLIDE
 
 !images/pulling_teeth.jpg!
 
-h3. Extracting Code into Classes and Modules
+h3(center). Extracting Code into Classes and Modules
 
+!SLIDE
 
-h1. Why?
+h2. Why?
 
-<% content_for :head do %>
-<style>
-.why { font-size: 24px }
-</style>
-<% end %>
+  *(slide why) Code Reuse
+  *(slide why) Readability
+  *(slide why) Wicked Fast Tests
 
-  *(why) Code Reuse
-  *(why) Readability
-  *(why) Wicked Fast Tests
+!SLIDE
 
-h1. Case Study - Readability & Reuse
+h2. Case Study - Readability & Reuse
 
 Often, code ripe for extraction is not overly complicated
 
@@ -44,7 +41,9 @@ class RegWatchRuleAlertScheduler < ContinuityControl::AbstractScheduler
 end
 <% end %>
 
-h1. Case Study - Readability & Reuse
+!SLIDE
+
+h2. Case Study - Readability & Reuse
 
 <% code :lang =>'ruby' do %>
 class RegWatchRuleAlertScheduler < ContinuityControl::AbstractScheduler
@@ -60,7 +59,9 @@ class RegWatchRuleAlertScheduler < ContinuityControl::AbstractScheduler
   end
 
 end
+<% end %>
 
+<% code :lang =>'ruby' do %>
 class ContinuityControl::RegulatorMatch
   attr_accessor :reg_watch_alert, :organization
 
@@ -84,23 +85,30 @@ class ContinuityControl::RegulatorMatch
 end
 <% end %>
 
-h1. Wicked Fast Tests
+!SLIDE
 
-With spec_helper (Rails, Factories, etc)
+h2. Wicked Fast Tests
+
+h3. With spec_helper (Rails, Factories, etc)
+
 <% code :lang =>'bash' do %>
 $ time (bundle exec rspec spec/with_spec_helper_spec.rb)
 
 9.70s user 1.82s system 99% cpu 11.566 total
 <% end %>
 
-Without spec_helper
+h3. Without spec_helper
+
 <% code :lang =>'bash' do %>
 $ time (rspec spec/without_spec_helper_spec.rb)
 
 0.36s user 0.10s system 90% cpu 0.511 total
 <% end %>
 
-h1. Wicked Fast Tests
+!SLIDE
+
+h2. Wicked Fast Tests
+
 <% code :lang => 'ruby' do %>
 #require 'spec_helper'
 require 'continuity_control/regulator_match'
@@ -131,7 +139,9 @@ describe ContinuityControl::RegulatorMatch do
 end
 <% end %>
 
-h1. Resources
+!SLIDE
+
+h2. Resources
 
  * Gary Bernhardt - Destroy All Software
  ** "https://www.destroyallsoftware.com/screencasts":https://www.destroyallsoftware.com/screencasts
@@ -142,19 +152,16 @@ h1. Resources
  * Ruby Rogues
  ** "http://rubyrogues.com/":http://rubyrogues.com/
 
-h1. Joel Nimety
-<% content_for :head do %>
-<style>
-.icon img { vertical-align: middle }
-</style>
-<% end %>
+!SLIDE
+
+h2. Joel Nimety
 
 <% left do %>
   !images/joel_in_a_jar.jpg!
 <% end %>
 
 <% right do %>
- *(icon continuity) !images/continuity_nu_32.png! SVP Technology, Continuity Control
- *(icon twitter) !images/twitter_32.png! @jnimety
- *(icon email) !images/email_32.png! jnimety@gmail.com
+ (contact-list)*(continuity) SVP Technology, "Continuity Control":https://control.continuity.net
+ *(twitter) "@jnimety":http://www.twitter.com/jnimety
+ *(email) "jnimety@gmail.com":mailto:jnimety@gmail.com
 <% end %>
